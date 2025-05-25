@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const questionRoutes = require("./routes/questionRoutes");
 const executeRoutes = require("./routes/executeRoutes");
+const { runCode } = require("./controllers/runController");
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(express.json());
 // API Routes
 app.use("/api/questions", questionRoutes);
 app.use("/api/execute", executeRoutes);
+app.post("/api/run", runCode);
 
 // DB Connection & Server Start
 mongoose
