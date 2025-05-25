@@ -28,7 +28,9 @@ export default function Questions() {
       </nav>
 
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <h1 className="text-4xl font-extrabold text-center mb-10 text-gray-700">Coding Questions</h1>
+        <h1 className="text-4xl font-extrabold text-center mb-10 text-gray-700">
+          Coding Questions
+        </h1>
 
         <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {questions.map((q, index) => (
