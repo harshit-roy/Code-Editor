@@ -1,21 +1,19 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const TestCaseSchema = new mongoose.Schema({
-  input: String,
-  output: String,
-  isHidden: { type: Boolean, default: false },
+  input: { type: String, required: true },
+  output: { type: String, required: true },
+  hidden: { type: Boolean, default: false }
 });
 
 const QuestionSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  language: [String], // supported languages
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  category: { type: String },
+  company: { type: String },
+  difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'], default: 'Medium' },
   testCases: [TestCaseSchema],
-  solution: {
-    type: Map,
-    of: String, // language => solution code
-  },
-  done: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Question", QuestionSchema);
+module.exports = mongoose.model('Question', QuestionSchema);

@@ -3,11 +3,35 @@ const Question = require("../models/Question");
 // Create a new question
 exports.createQuestion = async (req, res) => {
   try {
-    const question = new Question(req.body);
-    await question.save();
-    res.status(201).json(question);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    const {
+      title,
+      description,
+      category,
+      company,
+      difficulty,
+      testCases,
+    } = req.body;
+
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ error: "Title and description are required" });
+    }
+
+    const question = new Question({
+      title,
+      description,
+      category,
+      company,
+      difficulty,
+      testCases,
+    });
+
+    const savedQuestion = await question.save();
+    res.status(201).json(savedQuestion);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
@@ -32,7 +56,7 @@ exports.getQuestionById = async (req, res) => {
   }
 };
 
-// Update question "done" status and save solution
+// Update question "done" status and solution save krna h 
 exports.markAsDone = async (req, res) => {
   try {
     const { code, language } = req.body;

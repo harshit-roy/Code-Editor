@@ -1,9 +1,8 @@
-// controllers/runController.js
 const runCode = async (req, res) => {
   try {
     const { code, language, questionId, runType } = req.body;
 
-    // You should integrate Judge0 API or your own runner here
+    // compiler or interpreter pending h !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     console.log("Running code:", code);
     res.status(200).json({ output: "Code ran successfully!" });
   } catch (err) {

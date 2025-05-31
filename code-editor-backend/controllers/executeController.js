@@ -57,7 +57,7 @@ const runCode = async (req, res) => {
 
   const allPassed = testResults.every((t) => t.passed);
 
-  // Save solution only on submit and if all test cases passed
+  // Save solution only on submit and jab sub test cases pass ho
   if (runType === "submit" && allPassed) {
     await Submission.create({ questionId, code, language });
     await Question.findByIdAndUpdate(questionId, { isSolved: true });
