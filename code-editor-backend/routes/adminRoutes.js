@@ -1,20 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken, isAdmin } = require("../middleware/auth");
-console.log("authenticate is function:", typeof authenticate === "function");
-console.log("isAdmin is function:", typeof isAdmin === "function");
-const Question = require("../models/Question");
-const Submission = require("../models/Submission");
-const User = require("../models/User");
+const AdminDashboard = require("../models/AdminDashboard"); // make sure you have this model
 
+// Existing route
 router.get("/stats", verifyToken, isAdmin, async (req, res) => {
   try {
     const [totalQuestions, totalSubmissions, totalUsers] = await Promise.all([
-      Question.countDocuments(),
-      Submission.countDocuments(),
-      User.countDocuments(),
+      require("../models/Question").countDocuments(),
+      require("../models/Submission").countDocuments(),
+      require("../models/User").countDocuments(),
     ]);
     res.json({ totalQuestions, totalSubmissions, totalUsers });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// New admin dashboard route by adminId
+router.get("/dashboard/:adminId", verifyToken, isAdmin, async (req, res) => {
+  try {
+    const { adminId } = req.params;
+    const dashboard = await AdminDashboard.findOne({ adminId });
+
+    if (!dashboard) {
+      return res.status(404).json({ error: "Admin dashboard not found" });
+    }
+
+    res.json(dashboard);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
