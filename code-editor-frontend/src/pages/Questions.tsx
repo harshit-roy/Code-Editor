@@ -60,10 +60,10 @@ export default function Questions() {
         onKeyDown={onKeyDown}
         role="button"
         aria-label={ariaLabel}
-        className="cursor-pointer rounded-3xl bg-white bg-opacity-90 border border-indigo-300 shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 p-7 flex flex-col justify-between transition-transform"
+        className="glass-card cursor-pointer p-7 flex flex-col justify-between rounded-3xl border border-indigo-400 shadow-indigo-500/40 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform"
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        whileHover={{ scale: 1.04 }}
-        transition={{ type: "spring", stiffness: 100, damping: 16 }}
+        whileHover={{ scale: 1.06, boxShadow: "0 0 20px #6366f1" }}
+        transition={{ type: "spring", stiffness: 120, damping: 18 }}
       >
         {children}
       </motion.li>
@@ -106,7 +106,9 @@ export default function Questions() {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="group relative rounded-full bg-indigo-100 h-12 w-12 flex items-center justify-center text-indigo-700 font-bold text-lg"
+            whileFocus={{ scale: 1.1, boxShadow: "0 0 10px #6366f1" }}
+            whileTap={{ scale: 0.95 }}
+            className="group relative rounded-full bg-indigo-100 h-12 w-12 flex items-center justify-center text-indigo-700 font-bold text-lg cursor-pointer select-none"
           >
             U
             <div className="pointer-events-none absolute bottom-full mb-2 hidden group-focus:flex group-hover:flex left-1/2 -translate-x-1/2 rounded-md bg-indigo-700 text-white text-xs font-semibold px-2 py-1 whitespace-nowrap shadow-lg">
@@ -120,7 +122,7 @@ export default function Questions() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-5xl font-extrabold text-center mb-12 tracking-wide drop-shadow-sm text-indigo-900"
+            className="text-5xl font-extrabold text-center mb-12 tracking-wide drop-shadow-sm text-indigo-900 gradient-text select-none"
           >
             Coding Questions
           </motion.h1>
@@ -132,13 +134,15 @@ export default function Questions() {
             transition={{ delay: 0.5, duration: 0.6 }}
             className="max-w-md mx-auto mb-10"
           >
-            <input
+            <motion.input
               type="search"
               placeholder="Search questions..."
               aria-label="Search questions"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-full border border-indigo-300 focus:border-indigo-500 focus:outline-none px-6 py-3 text-lg shadow-sm placeholder-indigo-400 transition"
+              whileFocus={{ scale: 1.05, boxShadow: "0 0 8px #6366f1" }}
+              whileTap={{ scale: 0.95 }}
             />
           </motion.div>
 
@@ -204,7 +208,7 @@ export default function Questions() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      navigate(`/editor/${q._id}`); // same path
+                      navigate(`/editor/${q._id}`);
                     }
                   }}
                 >
@@ -215,7 +219,7 @@ export default function Questions() {
                     className={`inline-block px-3 py-1 rounded-full font-semibold tracking-wider ${
                       difficultyColors[
                         q.difficulty as keyof typeof difficultyColors
-                      ]
+                      ] || "bg-gray-200 text-gray-700"
                     }`}
                   >
                     {q.difficulty}
@@ -224,30 +228,69 @@ export default function Questions() {
               ))}
             </ul>
           ) : (
-            <p className="text-center text-indigo-700 text-lg mt-12 select-none">
-              No questions found matching "{search}".
+            <p className="text-center text-indigo-700 font-semibold mt-16 text-xl select-none">
+              No questions match your search "{search}"
             </p>
           )}
         </main>
       </div>
 
-      {/* Floating Animation Styles */}
+      {/* Extra styles for animations */}
       <style>{`
         @keyframes floatSlow {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(-12px) translateX(6px); }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-15px); }
         }
         @keyframes floatMedium {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(-16px) translateX(-10px); }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
         @keyframes floatFast {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(-8px) translateX(8px); }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
         }
-        .animate-floatSlow { animation: floatSlow 8s ease-in-out infinite; }
-        .animate-floatMedium { animation: floatMedium 6.5s ease-in-out infinite; }
-        .animate-floatFast { animation: floatFast 5s ease-in-out infinite; }
+        .animate-floatSlow {
+          animation: floatSlow 6s ease-in-out infinite;
+        }
+        .animate-floatMedium {
+          animation: floatMedium 4.5s ease-in-out infinite;
+        }
+        .animate-floatFast {
+          animation: floatFast 3s ease-in-out infinite;
+        }
+        .gradient-text {
+          background: linear-gradient(270deg, #6366f1, #818cf8, #a5b4fc);
+          background-size: 600% 600%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: gradientMove 8s ease infinite;
+        }
+        @keyframes gradientMove {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+        .glass-card {
+          background: rgba(255, 255, 255, 0.15);
+          border-radius: 1.5rem;
+          border: 1px solid rgba(99, 102, 241, 0.3);
+          backdrop-filter: blur(15px);
+          box-shadow:
+            0 0 10px rgba(99, 102, 241, 0.6),
+            0 0 20px rgba(99, 102, 241, 0.4);
+          transition: box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+          box-shadow:
+            0 0 15px rgba(99, 102, 241, 0.8),
+            0 0 30px rgba(99, 102, 241, 0.6);
+        }
       `}</style>
     </>
   );

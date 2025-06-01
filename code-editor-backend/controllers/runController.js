@@ -3,9 +3,9 @@ const Question = require("../models/Question");
 const Submission = require("../models/Submission");
 
 const languageMap = {
-  cpp: 54,
-  java: 62,
-  python: 71,
+  cpp: "cpp",
+  java: "java",
+  python: "python3",
 };
 
 const runCode = async (req, res) => {
@@ -16,18 +16,17 @@ const runCode = async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const languageId = languageMap[language.toLowerCase()];
-    if (!languageId) {
+    const pistonLang = languageMap[language.toLowerCase()];
+    if (!pistonLang) {
       return res.status(400).json({ error: "Unsupported language" });
     }
 
-    // Fetch question & test cases
     const question = await Question.findById(questionId);
     if (!question) {
       return res.status(404).json({ error: "Question not found" });
     }
 
-    // Select test cases based on runType
+    // Select test cases
     let testCases = [];
     if (runType === "run") {
       testCases = question.testCases.filter((tc) => !tc.hidden);
@@ -42,23 +41,22 @@ const runCode = async (req, res) => {
 
     for (const testCase of testCases) {
       const response = await axios.post(
-        "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true",
+        "https://emkc.org/api/v2/piston/execute",
         {
-          source_code: code,
-          language_id: languageId,
+          language: pistonLang,
+          version: "*", // always gets latest
           stdin: testCase.input,
-        },
-        {
-          headers: {
-            "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
-            "x-rapidapi-key": process.env.JUDGE0_API_KEY,
-            "content-type": "application/json",
-          },
+          files: [
+            {
+              name: `Main.${pistonLang === "java" ? "java" : pistonLang}`,
+              content: code,
+            },
+          ],
         }
       );
 
       const data = response.data;
-      const actualOutput = data.stdout ? data.stdout.trim() : "";
+      const actualOutput = data.run.stdout ? data.run.stdout.trim() : "";
       const expectedOutput = testCase.output.trim();
 
       const passed = actualOutput === expectedOutput;
@@ -69,13 +67,12 @@ const runCode = async (req, res) => {
         expectedOutput,
         actualOutput,
         passed,
-        stderr: data.stderr,
-        compile_output: data.compile_output,
-        message: data.message,
+        stderr: data.run.stderr,
+        compile_output: data.compile?.stdout || null,
+        message: data.message || null,
       });
     }
 
-    // Save submission only if runType=submit and all passed
     if (runType === "submit" && allPassed) {
       const userId = req.user ? req.user.id : null;
 
@@ -84,7 +81,7 @@ const runCode = async (req, res) => {
         questionId,
         code,
         language,
-        timeSpent: 0, // optionally track this
+        timeSpent: 0,
         passed: true,
       });
 

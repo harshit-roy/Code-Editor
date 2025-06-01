@@ -1,11 +1,14 @@
 const axios = require("axios");
 const Submission = require("../models/Submission");
 const Question = require("../models/Question");
-const apiUrl = process.env.JUDGE0_API;
+
+const apiUrl = "https://emkc.org/api/v2/piston";
+
+// Mapping to Piston language names and versions
 const languageMap = {
-  cpp: 54,
-  java: 62,
-  python: 71,
+  cpp: { language: "cpp", version: "10.2.0", ext: "cpp" },
+  java: { language: "java", version: "15.0.2", ext: "java" },
+  python: { language: "python", version: "3.10.0", ext: "py" },
 };
 
 const runCode = async (req, res) => {
@@ -26,38 +29,38 @@ const runCode = async (req, res) => {
 
   for (const testCase of relevantTestCases) {
     try {
-      const submission = await axios.post(
-        `${apiUrl}/submissions?base64_encoded=false&wait=true`,
-        {
-          source_code: code,
-          stdin: testCase.input,
-          language_id: languageMap[language],
-        },
-        {
-          headers: {
-            "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
-            "X-RapidAPI-Key": process.env.JUDGE0_API_KEY,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const { language: pistonLang, version, ext } = languageMap[language];
 
-      const { stdout, stderr } = submission.data;
+      const response = await axios.post(`${apiUrl}/execute`, {
+        language: pistonLang,
+        version: version,
+        stdin: testCase.input,
+        files: [
+          {
+            name: `main.${ext}`,
+            content: code,
+          },
+        ],
+      });
+
+      const { stdout, stderr } = response.data.run;
 
       testResults.push({
         input: testCase.input,
         expected: testCase.output,
-        output: stdout?.trim() || stderr,
-        passed: stdout?.trim() === testCase.output,
+        output: (stdout?.trim() || stderr?.trim() || "").trim(),
+        passed: (stdout?.trim() || "") === testCase.output,
       });
     } catch (error) {
-      return res.status(500).json({ error: "Judge0 error", details: error });
+      return res.status(500).json({
+        error: "Piston error",
+        details: error?.response?.data || error.message,
+      });
     }
   }
 
   const allPassed = testResults.every((t) => t.passed);
 
-  // Save solution only on submit and jab sub test cases pass ho
   if (runType === "submit" && allPassed) {
     await Submission.create({ questionId, code, language });
     await Question.findByIdAndUpdate(questionId, { isSolved: true });

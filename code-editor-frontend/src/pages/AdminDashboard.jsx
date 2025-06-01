@@ -39,9 +39,7 @@ const AdminDashboard = () => {
     setForm((prev) => ({ ...prev, testCases: updated }));
   };
 
-  const hasAtLeastOneHidden = () => {
-    return form.testCases.some((tc) => tc.isHidden);
-  };
+  const hasAtLeastOneHidden = () => form.testCases.some((tc) => tc.isHidden);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,83 +58,112 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-indigo-200 overflow-hidden">
-      <motion.div
-        className="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-300 via-purple-200 to-transparent animate-pulse"
-        initial={{ scale: 1 }}
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-      />
-
-      <motion.div
-        className="relative max-w-5xl mx-auto p-8 z-10"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+    <div className="min-h-screen bg-gradient-to-tr from-indigo-50 via-white to-indigo-100 p-6 flex flex-col lg:flex-row gap-8">
+      {/* Sidebar summary */}
+      <motion.aside
+        className="lg:w-1/3 bg-white/60 backdrop-blur-md rounded-3xl shadow-lg p-6 sticky top-6 h-fit self-start"
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
       >
-        <motion.h1
-          className="text-4xl font-extrabold text-indigo-800 mb-8 drop-shadow"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          Add New Coding Question
-        </motion.h1>
+        <h2 className="text-3xl font-extrabold text-indigo-700 mb-6 border-b border-indigo-300 pb-3">
+          Preview Summary
+        </h2>
+        <div className="space-y-4 text-indigo-900">
+          <p>
+            <span className="font-semibold">Title:</span> {form.title || "—"}
+          </p>
+          <p>
+            <span className="font-semibold">Category:</span>{" "}
+            {form.category || "—"}
+          </p>
+          <p>
+            <span className="font-semibold">Difficulty:</span> {form.difficulty}
+          </p>
+          <p className="font-semibold">Test Cases:</p>
+          <ul className="list-disc list-inside max-h-48 overflow-y-auto space-y-1">
+            {form.testCases.map((tc, idx) => (
+              <li
+                key={idx}
+                className={`p-2 rounded-lg ${
+                  tc.isHidden ? "bg-indigo-200 font-semibold" : "bg-indigo-100"
+                }`}
+              >
+                Input: <code>{tc.input || "N/A"}</code>
+                <br />
+                Output: <code>{tc.output || "N/A"}</code>
+                <br />
+                Hidden: {tc.isHidden ? "Yes" : "No"}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </motion.aside>
 
-        <motion.form
-          onSubmit={handleSubmit}
-          className="space-y-6 bg-white p-6 rounded-3xl shadow-2xl border border-gray-200 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
+      {/* Form */}
+      <motion.form
+        onSubmit={handleSubmit}
+        className="lg:w-2/3 bg-white rounded-3xl shadow-xl p-8 max-w-4xl mx-auto"
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
+        <h1 className="text-4xl font-extrabold text-indigo-800 mb-8 tracking-wide select-none">
+          Add New Coding Question
+        </h1>
+
+        <div className="space-y-6">
           <div>
-            <label className="block font-semibold text-lg mb-1 text-gray-700">
+            <label className="block font-semibold mb-2 text-gray-700">
               Title
             </label>
             <input
               name="title"
-              className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={form.title}
               onChange={handleChange}
               required
+              className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              placeholder="Enter question title"
             />
           </div>
+
           <div>
-            <label className="block font-semibold text-lg mb-1 text-gray-700">
+            <label className="block font-semibold mb-2 text-gray-700">
               Description
             </label>
             <textarea
               name="description"
-              className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 h-36"
               value={form.description}
               onChange={handleChange}
               required
+              className="w-full p-3 border border-gray-300 rounded-xl h-40 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+              placeholder="Explain the problem in detail"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block font-semibold text-lg mb-1 text-gray-700">
+              <label className="block font-semibold mb-2 text-gray-700">
                 Category
               </label>
               <input
                 name="category"
-                className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={form.category}
                 onChange={handleChange}
                 required
+                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                placeholder="e.g. Arrays, Graphs, DP"
               />
             </div>
             <div>
-              <label className="block font-semibold text-lg mb-1 text-gray-700">
+              <label className="block font-semibold mb-2 text-gray-700">
                 Difficulty
               </label>
               <select
                 name="difficulty"
-                className="w-full p-3 border rounded-xl border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 value={form.difficulty}
                 onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               >
                 <option>Easy</option>
                 <option>Medium</option>
@@ -145,50 +172,51 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block font-semibold text-lg mb-2 text-gray-700">
+          <section>
+            <label className="block font-semibold mb-4 text-gray-700">
               Test Cases
             </label>
-            {form.testCases.map((tc, idx) => (
-              <motion.div
-                key={idx}
-                className="border p-5 mb-4 rounded-2xl bg-white/70 backdrop-blur-sm shadow-md space-y-4 relative"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
+            <div className="space-y-5 max-h-96 overflow-y-auto pr-2">
+              {form.testCases.map((tc, idx) => (
+                <motion.div
+                  key={idx}
+                  className="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 relative shadow-sm"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <label className="block text-sm font-medium text-indigo-700 mb-1">
                     Input
                   </label>
                   <textarea
-                    className="w-full p-2 border rounded-xl border-gray-300 focus:outline-none"
+                    className="w-full p-2 border border-indigo-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                     value={tc.input}
                     onChange={(e) =>
                       handleTestCaseChange(idx, "input", e.target.value)
                     }
                     required
+                    rows={2}
+                    placeholder="Test input"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
+
+                  <label className="block text-sm font-medium text-indigo-700 mt-4 mb-1">
                     Output
                   </label>
                   <input
-                    className="w-full p-2 border rounded-xl border-gray-300 focus:outline-none"
+                    className="w-full p-2 border border-indigo-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     value={tc.output}
                     onChange={(e) =>
                       handleTestCaseChange(idx, "output", e.target.value)
                     }
                     required
+                    placeholder="Expected output"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
+
+                  <label className="block text-sm font-medium text-indigo-700 mt-4 mb-1">
                     Hidden
                   </label>
                   <select
-                    className="w-full p-2 border rounded-xl border-gray-300 focus:outline-none"
+                    className="w-full p-2 border border-indigo-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     value={tc.isHidden ? "true" : "false"}
                     onChange={(e) =>
                       handleTestCaseChange(idx, "isHidden", e.target.value)
@@ -197,35 +225,37 @@ const AdminDashboard = () => {
                     <option value="false">No</option>
                     <option value="true">Yes</option>
                   </select>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeTestCase(idx)}
-                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"
-                >
-                  ✕
-                </button>
-              </motion.div>
-            ))}
+
+                  <button
+                    type="button"
+                    onClick={() => removeTestCase(idx)}
+                    className="absolute top-3 right-3 text-red-500 hover:text-red-700 font-bold text-xl leading-none select-none"
+                    aria-label="Remove test case"
+                  >
+                    &times;
+                  </button>
+                </motion.div>
+              ))}
+            </div>
             <button
               type="button"
               onClick={addTestCase}
-              className="mt-2 px-5 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md"
+              className="mt-5 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-lg transition-transform transform hover:scale-105"
             >
               + Add Test Case
             </button>
-          </div>
+          </section>
 
           <motion.button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-2xl hover:bg-green-700 font-semibold text-lg shadow-lg"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
+            className="mt-8 w-full bg-green-600 text-white py-4 rounded-3xl font-semibold shadow-xl hover:bg-green-700 transition-transform transform hover:scale-105"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
           >
             Submit Question
           </motion.button>
-        </motion.form>
-      </motion.div>
+        </div>
+      </motion.form>
     </div>
   );
 };

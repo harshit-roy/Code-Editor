@@ -20,18 +20,23 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto p-6 max-w-7xl">
-        <h1 className="text-4xl font-extrabold mb-8 text-indigo-800 text-center">
+      <main className="container mx-auto p-6 max-w-7xl min-h-screen bg-gradient-to-b from-white to-indigo-50 text-gray-800">
+        <h1 className="text-4xl font-extrabold mb-8 text-indigo-700 text-center tracking-wide drop-shadow-sm">
           Coding Questions
         </h1>
-        <input
-          type="search"
-          placeholder="Search questions..."
-          className="w-full max-w-md mx-auto mb-10 rounded-full border border-indigo-400 px-6 py-3 text-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search coding questions"
-        />
+        <div className="flex justify-center mb-10">
+          <input
+            type="search"
+            placeholder="Search questions..."
+            className="w-full max-w-md rounded-full border border-indigo-400 px-6 py-3 text-lg
+                       shadow-md placeholder-indigo-500 text-indigo-700
+                       focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-40
+                       transition duration-300 ease-in-out hover:scale-105"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search coding questions"
+          />
+        </div>
         <QuestionList questions={filteredQuestions} />
       </main>
     </>

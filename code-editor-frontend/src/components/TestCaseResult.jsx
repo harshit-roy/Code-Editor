@@ -1,8 +1,9 @@
+import { CheckCircle, XCircle } from "lucide-react";
+
 export default function TestCaseResult({ results, runType = "run" }) {
   if (!Array.isArray(results) || results.length === 0) return null;
 
-  // Determine hidden count based on runType and index
-  const displayResults = runType === "submit" ? results : results.slice(0, 3); // Only show open cases on run
+  const displayResults = runType === "submit" ? results : results.slice(0, 3);
 
   const passedCount = displayResults.filter((r) => r.passed).length;
   const failedCount = displayResults.filter((r) => !r.passed).length;
@@ -12,66 +13,70 @@ export default function TestCaseResult({ results, runType = "run" }) {
     <section
       aria-live="polite"
       aria-atomic="true"
-      className="mt-4 bg-white rounded-lg shadow-md p-4 border border-indigo-300 max-h-96 overflow-auto"
+      className="mt-6 bg-white border border-indigo-200 rounded-xl shadow-lg p-6"
     >
-      <h3 className="font-semibold text-indigo-700 mb-2">Test Case Results</h3>
-      <ul className="divide-y divide-indigo-200">
+      <h3 className="text-xl font-semibold text-indigo-800 mb-4">
+        Test Case Results
+      </h3>
+
+      <ul className="space-y-4">
         {displayResults.map((result, i) => {
-          const status = result.passed ? "passed" : "failed";
+          const passed = result.passed;
           const isHidden = runType === "submit" && i >= 3;
 
           return (
             <li
               key={i}
-              className={`py-2 flex items-start gap-2 ${
-                status === "passed"
-                  ? "text-green-700"
-                  : status === "failed"
-                  ? "text-red-700"
-                  : "text-gray-700"
+              className={`flex items-start p-4 rounded-lg border ${
+                passed
+                  ? "bg-green-50 border-green-200 text-green-800"
+                  : "bg-red-50 border-red-200 text-red-800"
               }`}
             >
-              <span className="mt-1">
-                {status === "passed" && (
-                  <span
-                    role="img"
-                    aria-label="Passed"
-                    className="text-green-600"
-                  >
-                    ✔️
-                  </span>
+              <div className="mt-1 mr-3">
+                {passed ? (
+                  <CheckCircle size={22} className="text-green-600" />
+                ) : (
+                  <XCircle size={22} className="text-red-600" />
                 )}
-                {status === "failed" && (
-                  <span role="img" aria-label="Failed" className="text-red-600">
-                    ❌
-                  </span>
-                )}
-              </span>
-              <div>
-                <span className="font-medium">
+              </div>
+
+              <div className="flex-1">
+                <div className="font-semibold text-base">
                   {isHidden
-                    ? `Hidden Test Case ${i + 1} (${status.toUpperCase()})`
+                    ? `Hidden Test Case ${i + 1}`
                     : `Test Case ${i + 1}`}
-                </span>
-                <div className="text-sm mt-1 text-gray-800">
-                  <p>
-                    <strong>Input:</strong> {result.input}
-                  </p>
-                  <p>
-                    <strong>Expected:</strong> {result.expectedOutput}
-                  </p>
-                  <p>
-                    <strong>Output:</strong> {result.actualOutput}
-                  </p>
                 </div>
+
+                {!isHidden && (
+                  <div className="text-sm mt-1 text-gray-700 space-y-1">
+                    <p>
+                      <strong>Input:</strong> {result.input}
+                    </p>
+                    <p>
+                      <strong>Expected:</strong> {result.expectedOutput}
+                    </p>
+                    <p>
+                      <strong>Output:</strong> {result.actualOutput}
+                    </p>
+                  </div>
+                )}
+
+                {isHidden && (
+                  <p className="text-sm text-gray-600 mt-1 italic">
+                    Hidden input/output not shown
+                  </p>
+                )}
               </div>
             </li>
           );
         })}
       </ul>
 
-      <div className="mt-3 text-sm text-indigo-600 font-semibold">
-        Passed: {passedCount} | Failed: {failedCount} | Hidden: {hiddenCount}
+      <div className="mt-6 flex justify-between text-sm font-semibold text-indigo-700">
+        <span>✅ Passed: {passedCount}</span>
+        <span>❌ Failed: {failedCount}</span>
+        {runType === "submit" && <span>🔒 Hidden: {hiddenCount}</span>}
       </div>
     </section>
   );

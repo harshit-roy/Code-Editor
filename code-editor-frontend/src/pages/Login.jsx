@@ -25,10 +25,8 @@ export default function Login() {
 
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Save token separately (optional but good practice)
       localStorage.setItem("token", data.token);
 
-      // ✅ Only save necessary user info
       const sanitizedUser = {
         _id: data.user._id,
         email: data.user.email,
@@ -36,8 +34,6 @@ export default function Login() {
       };
 
       login(sanitizedUser);
-
-      // ✅ Redirect to homepage
       navigate("/");
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -47,41 +43,59 @@ export default function Login() {
   return (
     <>
       <Navbar />
-      <main className="max-w-md mx-auto mt-20 p-6 rounded-lg shadow-lg border border-indigo-300">
-        <h1 className="text-3xl font-bold mb-6 text-indigo-700 text-center">
-          Login
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {error && <p className="text-red-600 font-semibold">{error}</p>}
-          <input
-            type="email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-indigo-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border border-indigo-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <button
-            type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded py-2 font-semibold transition"
+      <main className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gradient-to-tr from-indigo-50 to-indigo-200 p-6">
+        <section className="relative w-full max-w-md bg-white rounded-3xl shadow-xl ring-1 ring-indigo-300 ring-opacity-30 overflow-hidden animate-fadeInUp">
+          <div className="absolute inset-0 bg-indigo-500 mix-blend-multiply opacity-20 pointer-events-none"></div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="relative p-10 flex flex-col gap-7"
+            aria-label="Login form"
           >
-            Login
-          </button>
-        </form>
-        <p className="mt-4 text-center text-indigo-700">
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="underline hover:text-indigo-900">
-            Register
-          </Link>
-        </p>
+            <h1 className="text-4xl font-extrabold text-indigo-800 tracking-tight text-center drop-shadow-md">
+              Welcome Back
+            </h1>
+            {error && (
+              <p className="bg-red-100 text-red-700 px-4 py-2 rounded font-semibold shadow-sm animate-shake">
+                {error}
+              </p>
+            )}
+            <input
+              type="email"
+              placeholder="Email address"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border border-indigo-300 rounded-lg px-5 py-3 placeholder-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400 focus:ring-opacity-50 transition"
+              autoComplete="email"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border border-indigo-300 rounded-lg px-5 py-3 placeholder-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400 focus:ring-opacity-50 transition"
+              autoComplete="current-password"
+            />
+            <button
+              type="submit"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-3 font-semibold tracking-wide shadow-lg transition-transform transform hover:scale-105"
+              aria-label="Login button"
+            >
+              Log In
+            </button>
+            <p className="text-center text-indigo-700">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="font-semibold underline hover:text-indigo-900 transition"
+              >
+                Register
+              </Link>
+            </p>
+          </form>
+        </section>
       </main>
     </>
   );

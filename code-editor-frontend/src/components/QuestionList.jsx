@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { Flame, Clock } from "lucide-react";
 
-const difficultyColors = {
-  Easy: "bg-green-200 text-green-800",
-  Medium: "bg-yellow-200 text-yellow-800",
-  Hard: "bg-red-200 text-red-800",
+const difficultyStyles = {
+  Easy: "bg-green-100 text-green-800",
+  Medium: "bg-yellow-100 text-yellow-800",
+  Hard: "bg-red-100 text-red-800",
 };
 
 export default function QuestionList({ questions = [] }) {
@@ -11,14 +12,16 @@ export default function QuestionList({ questions = [] }) {
 
   if (!Array.isArray(questions) || questions.length === 0) {
     return (
-      <p className="text-center text-indigo-700 mt-12">No questions found.</p>
+      <p className="text-center text-indigo-700 mt-12 text-lg font-semibold">
+        No questions available yet.
+      </p>
     );
   }
 
   return (
-    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 py-8">
       {questions.map((q) => (
-        <li
+        <div
           key={q._id}
           role="button"
           tabIndex={0}
@@ -29,21 +32,38 @@ export default function QuestionList({ questions = [] }) {
               navigate(`/editor/${q._id}`);
             }
           }}
-          className="cursor-pointer rounded-3xl bg-white p-6 shadow-lg border border-indigo-300 flex flex-col justify-between focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform hover:scale-105"
-          aria-label={`Open question titled ${q.title} with difficulty ${q.difficulty}`}
+          className="cursor-pointer rounded-2xl border border-indigo-200 bg-white/60 backdrop-blur-md p-6 shadow-md hover:shadow-lg transition-transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-indigo-300"
         >
-          <h2 className="text-xl font-semibold text-indigo-900 mb-4">
-            {q.title}
-          </h2>
-          <span
-            className={`inline-block px-3 py-1 rounded-full font-semibold tracking-wider ${
-              difficultyColors[q.difficulty] || "bg-gray-200 text-gray-800"
-            }`}
-          >
-            {q.difficulty}
-          </span>
-        </li>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-semibold text-indigo-900 flex items-center gap-2">
+              {q.title}
+              <Flame size={18} className="text-orange-500 opacity-70" />
+            </h2>
+            <span
+              className={`text-xs px-3 py-1 rounded-full font-semibold ${
+                difficultyStyles[q.difficulty] || "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {q.difficulty}
+            </span>
+          </div>
+
+          <p className="text-sm text-gray-600 mb-4">
+            Challenge yourself with this {q.difficulty.toLowerCase()} level
+            problem to sharpen your coding skills.
+          </p>
+
+          <div className="text-sm text-indigo-600 flex items-center gap-2 font-medium">
+            <Clock size={14} />
+            Estimated time:{" "}
+            {q.difficulty === "Hard"
+              ? "45 mins"
+              : q.difficulty === "Medium"
+              ? "30 mins"
+              : "15 mins"}
+          </div>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
